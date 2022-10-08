@@ -17,13 +17,12 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.9",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9.0"
+python = "^3.10.0"
 starlette = "^0.21.0"
 
 [tool.poetry.dev-dependencies]
