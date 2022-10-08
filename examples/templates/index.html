@@ -1,0 +1,43 @@
+{% import 'starlette_flash/flash_messages.html' as lib %}
+
+<!doctype html>
+<html>
+<head>
+    <style>
+        .alert {
+            border: 1px solid transparent;
+            padding: 4px;
+        }
+
+        .alert-success {
+            border-color: green;
+            color: green;
+            background-color: palegreen;
+        }
+
+        .alert-error {
+            border-color: red;
+            color: red;
+            background-color: lightpink;
+        }
+    </style>
+</head>
+<body>
+<div>
+    {% if flash_messages %}
+        {{ lib.flash_messages(flash_messages) }}
+    {% endif %}
+</div>
+<form method="post">
+    <label>
+        Select category
+        <select name="category">
+            <option value="success">Success</option>
+            <option value="error">Error</option>
+        </select>
+    </label>
+    <label>Enter message <input type="text" name="message"></label>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>

@@ -1,6 +1,6 @@
 import logging
 import typing
-from starlette.requests import HTTPConnection
+from starlette.requests import Request
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,12 @@ class FlashBag:
         return len(self) > 0
 
 
-def flash(conn: HTTPConnection) -> FlashBag:
+def flash(request: Request) -> FlashBag:
     """Get flash messages bag."""
-    conn.session.setdefault("flash_messages", [])
-    return FlashBag(conn.session["flash_messages"])
+    request.session.setdefault("flash_messages", [])
+    return FlashBag(request.session["flash_messages"])
+
+
+def flash_processor(request: Request) -> dict[str, typing.Any]:
+    """Flash message template context processor."""
+    return {"flash_messages": flash(request)}
