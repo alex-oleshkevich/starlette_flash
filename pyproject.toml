@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "starlette_flash"
 description = "Flash messages for Starlette framework."
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Alex Oleshkevich <alex.oleshkevich@gmail.com>"]
 license = "MIT"
 readme = "README.md"
@@ -23,7 +23,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.10.0"
-starlette = "^0.21.0"
+starlette = "*"
 
 
 [tool.poetry.group.dev.dependencies]
