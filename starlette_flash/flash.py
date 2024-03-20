@@ -71,8 +71,3 @@ def flash(request: Request) -> FlashBag:
     """Get flash messages bag."""
     request.session.setdefault("flash_messages", [])
     return FlashBag(request.session["flash_messages"])
-
-
-def flash_processor(request: Request) -> dict[str, typing.Any]:
-    """Flash message template context processor."""
-    return {"flash_messages": flash(request)}
