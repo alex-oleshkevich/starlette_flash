@@ -6,7 +6,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 from starlette.testclient import TestClient
 
-from starlette_flash.flash import FlashBag, FlashCategory, FlashMessage, flash
+from starlette_flash.flash import FlashBag, FlashCategory, FlashMessage, flash, get_messages_for_template
 
 
 def test_flash_bag() -> None:
@@ -74,6 +74,34 @@ def test_bag_is_iterable() -> None:
     for _ in bag:
         pass
     assert len(bag) == 0
+
+
+def test_fluent_chaining() -> None:
+    bag = FlashBag([])
+    assert bag.add("msg", FlashCategory.INFO) is bag
+    result = bag.info("a").success("b").error("c").warning("d").debug("e")
+    assert result is bag
+    assert len(bag) == 6
+
+
+def test_get_messages_for_template() -> None:
+    def set_view(request: Request) -> JSONResponse:
+        flash(request).success("hello")
+        return JSONResponse({})
+
+    def get_view(request: Request) -> JSONResponse:
+        return JSONResponse({"messages": get_messages_for_template(request)})
+
+    app = Starlette(
+        routes=[Route("/set", set_view, methods=["post"]), Route("/get", get_view)],
+        middleware=[Middleware(SessionMiddleware, secret_key="key", max_age=80000)],
+    )
+    client = TestClient(app)
+    client.post("/set")
+    response = client.get("/get")
+    assert response.json()["messages"] == [{"category": "success", "message": "hello"}]
+    response = client.get("/get")
+    assert response.json()["messages"] == []
 
 
 def test_starlette_integration() -> None:

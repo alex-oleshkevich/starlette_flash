@@ -1,8 +1,8 @@
-import logging
-import typing
-from starlette.requests import Request
+from __future__ import annotations
 
-logger = logging.getLogger(__name__)
+import typing
+
+from starlette.requests import Request
 
 
 class FlashCategory:
@@ -22,28 +22,34 @@ class FlashBag:
     def __init__(self, messages: list[FlashMessage]):
         self._messages = messages
 
-    def add(self, message: str, category: str) -> None:
+    def add(self, message: str, category: str) -> FlashBag:
         self._messages.append({"category": category, "message": str(message)})
+        return self
 
     def get_by_category(self, category: FlashCategory | str) -> list[FlashMessage]:
         messages = [message for message in self._messages if message["category"] == category]
         self._messages = [message for message in self._messages if message["category"] != category]
         return messages
 
-    def debug(self, message: str) -> None:
+    def debug(self, message: str) -> FlashBag:
         self.add(message, FlashCategory.DEBUG)
+        return self
 
-    def info(self, message: str) -> None:
+    def info(self, message: str) -> FlashBag:
         self.add(message, FlashCategory.INFO)
+        return self
 
-    def success(self, message: str) -> None:
+    def success(self, message: str) -> FlashBag:
         self.add(message, FlashCategory.SUCCESS)
+        return self
 
-    def warning(self, message: str) -> None:
+    def warning(self, message: str) -> FlashBag:
         self.add(message, FlashCategory.WARNING)
+        return self
 
-    def error(self, message: str) -> None:
+    def error(self, message: str) -> FlashBag:
         self.add(message, FlashCategory.ERROR)
+        return self
 
     def all(self) -> list[FlashMessage]:
         return self._messages
@@ -71,3 +77,8 @@ def flash(request: Request) -> FlashBag:
     """Get flash messages bag."""
     request.session.setdefault("flash_messages", [])
     return FlashBag(request.session["flash_messages"])
+
+
+def get_messages_for_template(request: Request) -> list[FlashMessage]:
+    """Consume and return all flash messages, suitable for template context processors."""
+    return flash(request).consume()

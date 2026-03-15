@@ -1,3 +1,3 @@
-from .flash import FlashCategory, FlashMessage, flash
+from .flash import FlashBag, FlashCategory, FlashMessage, flash, get_messages_for_template
 
-__all__ = ["flash", "FlashMessage", "FlashCategory"]
+__all__ = ["FlashBag", "FlashCategory", "FlashMessage", "flash", "get_messages_for_template"]
