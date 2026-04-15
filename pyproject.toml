@@ -22,7 +22,9 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
 ]
-dependencies = []
+dependencies = [
+    "typing_extensions >= 4.10.0; python_version < '3.13'",
+]
 
 [project.urls]
 Homepage = "https://github.com/alex-oleshkevich/starlette_flash"
