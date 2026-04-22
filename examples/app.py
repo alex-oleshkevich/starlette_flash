@@ -12,13 +12,15 @@ from starlette_flash import flash
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
 templates = Jinja2Templates(
-    os.path.join(this_dir, "templates"),
-    loader=jinja2.ChoiceLoader(
-        [
-            jinja2.PackageLoader(__name__),
-            jinja2.PackageLoader("starlette_flash"),
-        ]
-    ),
+    env=jinja2.Environment(
+        loader=jinja2.ChoiceLoader(
+            [
+                jinja2.FileSystemLoader(os.path.join(this_dir, "templates")),
+                jinja2.PackageLoader("starlette_flash"),
+            ]
+        ),
+        autoescape=True,
+    )
 )
 
 
@@ -30,7 +32,7 @@ async def index_view(request: Request) -> Response:
         messages.add(str(data["message"]), str(data["category"]))
         return RedirectResponse("/", 302)
 
-    return templates.TemplateResponse("index.html", {"request": request, "flash_messages": messages})
+    return templates.TemplateResponse(request, "index.html", {"flash_messages": messages})
 
 
 app = Starlette(
