@@ -1,3 +1,5 @@
+import typing
+
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -7,6 +9,19 @@ from starlette.routing import Route
 from starlette.testclient import TestClient
 
 from starlette_flash.flash import FlashBag, FlashCategory, FlashMessage, flash, get_messages_for_template
+
+
+class MarkedSession(dict[str, typing.Any]):
+    def __init__(self) -> None:
+        super().__init__()
+        self.modified_calls = 0
+        self.accessed_calls = 0
+
+    def mark_modified(self) -> None:
+        self.modified_calls += 1
+
+    def mark_accessed(self) -> None:
+        self.accessed_calls += 1
 
 
 def test_flash_bag() -> None:
@@ -82,6 +97,33 @@ def test_fluent_chaining() -> None:
     result = bag.info("a").success("b").error("c").warning("d").debug("e")
     assert result is bag
     assert len(bag) == 6
+
+
+def test_session_markers_are_used() -> None:
+    session = MarkedSession()
+    bag = FlashBag(session)
+
+    bag.add("one", FlashCategory.INFO)
+    assert session.modified_calls == 1
+
+    assert bag.get_by_category(FlashCategory.INFO) == [{"category": "info", "message": "one"}]
+    assert session.modified_calls == 2
+
+    bag.success("two")
+    assert session.modified_calls == 3
+
+    assert bag.all() == [{"category": "success", "message": "two"}]
+    assert session.accessed_calls == 1
+
+    assert len(bag) == 1
+    assert session.accessed_calls == 2
+
+    assert bool(bag) is True
+    assert session.accessed_calls == 4
+
+    bag.clear()
+    assert session.modified_calls == 4
+    assert len(bag) == 0
 
 
 def test_get_messages_for_template() -> None:
